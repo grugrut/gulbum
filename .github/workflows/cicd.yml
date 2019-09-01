@@ -20,7 +20,11 @@ jobs:
     - name: npm install, build, and test
       run: |
         npm install
+        npm install firebase
+        npm install @vue/cli
         npm run build --if-present
         npm test
       env:
         CI: true
+    - name: deploy
+      run: firebase deploy --token "$FIREBASE_TOKEN"
