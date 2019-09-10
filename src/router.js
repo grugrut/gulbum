@@ -35,7 +35,6 @@ router.beforeResolve((to, from, next) => {
     next()
   } else {
     firebase.auth().onAuthStateChanged(user => {
-      alert(user)
       if (user) {
         next()
       } else {

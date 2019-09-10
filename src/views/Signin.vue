@@ -1,4 +1,5 @@
 <template>
+  このページを参照するにはログインが必要です。
   <button v-on:click="googleLogin">Login</button>
 </template>
 

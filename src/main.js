@@ -2,6 +2,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import firebase from 'firebase'
+import Buefy from 'buefy'
+import 'buefy/dist/buefy.css'
 
 Vue.config.productionTip = false
 
@@ -15,6 +17,8 @@ const firebaseConfig = {
   appId: "1:633029428409:web:9ad990d0533d3f76"
 };
 firebase.initializeApp(firebaseConfig);
+
+Vue.use(Buefy)
 
 new Vue({
   router,
