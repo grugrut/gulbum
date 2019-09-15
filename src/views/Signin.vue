@@ -1,6 +1,8 @@
 <template>
-  このページを参照するにはログインが必要です。
-  <button v-on:click="googleLogin">Login</button>
+  <div>
+    Googleアカウントでログイン<br>
+    <b-button @click="googleLogin">Login</b-button>
+  </div>
 </template>
 
 <script>
@@ -9,15 +11,19 @@
  
  export default {
    name: 'singin',
+   created() {
+     firebase.auth().getRedirectResult().then(function(result) {
+       if (result.credential) {
+         router.push('/');
+       }
+     }).catch(function(error) {
+       console.log(error.message);
+     });
+   },
    methods: {
      googleLogin() {
-       const provider = new firebase.auth.GoogleAuthProvider()
-       firebase.auth().signInWithPopup(provider).then(result => {
-         alert(result)
-         router.push('/')
-       }).catch(error => {
-         alert(error.message)
-       })
+       const provider = new firebase.auth.GoogleAuthProvider();
+       firebase.auth().signInWithPopup(provider);
      }
    }
  }

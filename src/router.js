@@ -3,8 +3,33 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Signin from './views/Signin.vue'
 import firebase from 'firebase'
+//import auth from './utils/auth.js'
 
 Vue.use(Router)
+
+const isLogin = (user) => {
+  var db = firebase.firestore();
+  if (user.uid) {
+    var docRef = db.collection("allowed_users").doc(user.uid);
+    docRef.get().then(function(doc) {
+      if (doc.exists) {
+        return true;
+      } else {
+        db.collection("allowed_users").doc(user.email).get().then(function(doc) {
+          if (doc.exists) {
+            db.collection("users").doc(user.uid).set({
+              name: user.displayName
+              });
+            return true;
+          }
+        })
+      }
+    }).catch (function(error) {
+      console.log(error);
+    });
+  }
+  return;
+}
 
 const router = new Router({
   mode: 'history',
@@ -30,18 +55,20 @@ const router = new Router({
     }
   ]
 })
-router.beforeResolve((to, from, next) => {
-  if (to.path == '/signin') {
-    next()
+router.beforeEach((to, from, next) => {
+  if (to.path === '/signin') {
+    next();
   } else {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        next()
-      } else {
-        next({path: '/signin'})
+        if (isLogin(user)) {
+          next();
+        }
       }
+      next({path: '/signin', query: {redirect: to.fullPath}})
     })
   }
 })
 
 export default router
+  

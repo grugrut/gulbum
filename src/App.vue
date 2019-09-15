@@ -22,26 +22,17 @@
           <div class="navbar-item">
             <div v-if="user.uid">
               [{{ user.displayName }}]
-              <a class="button is-primary" v-on:click="logout">
-                Logout
-              </a>
             </div>
             <div v-else>
-              <a class="button is-primary" v-on:click="login">
+              <router-link to="/signin" class="button is-primary">
                 Login
-              </a>
+              </router-link>
             </div>
           </div>
         </div>
       </div>
     </nav>
-    <div class="container is-fluid">
-      <div id="nav">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
-      </div>
-      <router-view/>
-    </div>
+    <router-view/>
   </div>
 </template>
 
@@ -57,15 +48,6 @@
      firebase.auth().onAuthStateChanged(user => {
        this.user = user ? user : {}
      })
-   },
-   methods: {
-     login() {
-       const provider = new firebase.auth.GoogleAuthProvider()
-       firebase.auth().signInWithPopup(provider)
-     },
-     logout() {
-       firebase.auth().signOut()
-     }
    }
  }
 </script>
