@@ -11,19 +11,39 @@
  
  export default {
    name: 'singin',
-   created() {
-     firebase.auth().getRedirectResult().then(function(result) {
-       if (result.credential) {
-         router.push('/');
-       }
-     }).catch(function(error) {
-       console.log(error.message);
-     });
-   },
    methods: {
      googleLogin() {
        const provider = new firebase.auth.GoogleAuthProvider();
-       firebase.auth().signInWithPopup(provider);
+       firebase.auth().signInWithPopup(provider).then(result => {
+         var db = firebase.firestore();
+         var user = result.user;
+         if (user.uid) {
+           db.collection('users').doc(user.uid).get().then(doc => {
+             if (doc.exists) {
+               this.$router.push('/');
+             } else {
+               db.collection("allowed_users").doc(user.email).get().then(function(doc) {
+                 if (doc.exists) {
+                   db.collection("users").doc(user.uid).set({
+                     name: user.displayName
+                   });
+                   this.$router.push('/');
+                 }
+                 firebase.auth().signOut();
+               }).catch (error => {
+                 firebase.auth().signOut();
+                 console.log(error);
+               });
+             }
+           }).catch (error => {
+             firebase.auth().signOut();
+             console.log(error);
+           });
+         }
+       }).catch (error => {
+         firebase.auth().signOut();
+         console.log(error);
+       });
      }
    }
  }
